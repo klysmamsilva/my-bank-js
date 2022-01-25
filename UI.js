@@ -14,155 +14,151 @@ function iniciar() {
 }
 
 function exibeMenu() {
-    console.log("\n\n\t Escolha a opção desejada");
+    console.log("\n\n\t\t Escolha a opção desejada\n\n");
     console.log("1 - Consultar Extrato");
     console.log("2 - Sacar");
     console.log("3 - Depositar");
     console.log("4 - Cadastrar Conta");
     console.log("5 - Listar Contas");
-    console.log("9 - Sair");
+    console.log("6 - Transferir");
+    console.log("7 - Informações do Cliente");
+    console.log("8 - Apagar Conta")
+    console.log("9 - Sair\n");
 }
 
 function escolheOpcao(opcao) {
 
     switch (opcao) {
         case 1:
-            console.log('Implementar extrato.');
+            numConta = Number(prompt('Informe o número da conta: '))
+            conta = bd.lerConta(numConta);
+            if (conta == undefined) {
+                console.log(`\nEssa conta não existe!\nPor favor, informe uma conta válida.`)
+                return
+            }
+            console.log(`\nSaldo da conta: R$ ${conta._saldo}`)
             break;
+
         case 2:
-            console.log('Implementar saque.');
+            console.log("\nSacar\n\n")
+            numConta = Number(prompt('Informe o número da conta: '))
+            conta = bd.lerConta(numConta);
+            if (conta == undefined) {
+                console.log(`\nEssa conta não existe!\nPor favor,informe uma conta válida.`)
+                return
+            }
+            valor = Number(prompt('Informe a quantia do saque: R$ '))
+            if (valor == "" || isNaN(valor)) {
+                console.log("\nQuantia inválida!")
+                return
+            }
+            conta.sacar(valor)
             break;
 
         case 3:
-            console.log('Implementar deposito.');
+            console.log("\nDepositar\n\n")
+            numConta = Number(prompt('Informe o número da conta: '))
+            conta = bd.lerConta(numConta);
+            if (conta == undefined) {
+                console.log(`\nEssa conta não existe!\nPor favor,informe uma conta válida.`)
+                return
+            }
+            valor = Number(prompt('Informe a quantia: R$ '))
+            if (valor == "" || isNaN(valor)) {
+                console.log("\nQuantia inválida!")
+                return
+            }
+            conta.depositar(valor)
             break;
 
         case 4:
-            console.log("Cadastrar nova conta.");
+            console.log("\nCadastrar nova conta\n\n");
 
             const novoCliente = new Cliente();
             novoCliente.nome = prompt('Informe o nome: ');
+            while (novoCliente.nome == "" || Number(novoCliente.nome) || novoCliente.nome.length < 2) {
+                console.log("\nEsse nome não é válido!")
+                novoCliente.nome = prompt('Informe o nome novamente: ');
+            }
             novoCliente.cpf = prompt('Informe o CPF: ');
+            while (novoCliente.cpf == "" || isNaN(novoCliente.cpf) || novoCliente.cpf.length > 11) {
+                console.log("\nEsse CPF não é válido!")
+                novoCliente.cpf = prompt('Informe o CPF novamente: ');
+            }
+            novoCliente.fone = prompt('Informe o telefone: ');
+            while (novoCliente.fone == "" || isNaN(novoCliente.fone) || novoCliente.fone.length > 11) {
+                console.log("\nEsse telefone não é válido!")
+                novoCliente.fone = prompt('Informe o telefone novamente: ');
+            }
 
             const novaConta = new Conta();
             novaConta.agencia = Number(prompt('Informe a agencia: '));
-            novaConta.numero = Number(prompt('Informe o número da conta: '));;
+            while (novaConta.agencia == "" || isNaN(novaConta.agencia) || novaConta.agencia.length > 3) {
+                console.log("\nEssa agência não é válida!")
+                novaConta.agencia = Number(prompt('Informe a agencia novamente: '));
+            }
+            novaConta.numero = Number(prompt('Informe o número da conta: '));
+            while (novaConta.numero == "" || isNaN(novaConta.numero)) {
+                console.log("\nEsse número não é válido!")
+                novaConta.numero = Number(prompt('Informe o número da conta novamente: '));
+            }
+            novaConta._saldo = 0.0
             novaConta.cliente = novoCliente;
 
             bd.cadastrarConta(novaConta);
+
+            console.log("\nConta cadastrada com Sucesso!")
             break;
 
         case 5:
-            console.log('Listando contas: ');
+            console.log('\n\nListando contas: \n');
             bd.listarContas();
             break;
-        case 9:
-            console.log('Saindo da aplicação.');
+
+        case 6:
+            console.log('\nTransferir\n\n')
+            numConta1 = Number(prompt('Informe o número da sua conta: '))
+            conta1 = bd.lerConta(numConta1);
+            if (conta1 == undefined) {
+                console.log(`\nEssa conta não existe!\nPor favor,informe uma conta válida.`)
+                return
+            }
+            valor = Number(prompt('Informe a quantia: R$ '))
+            if (valor == "" || isNaN(valor)) {
+                console.log("\nQuantia inválida!")
+                return
+            }
+            numConta2 = Number(prompt('Informe o número da outra conta: '))
+            conta2 = bd.lerConta(numConta2);
+            if (conta2 == undefined) {
+                console.log(`\nEssa conta não existe!\nPor favor,informe uma conta válida.`)
+                return
+            }
+            conta1.transferir(valor, conta2)
             break;
+
+        case 7:
+            console.log('\nInformações do Cliente\n\n')
+            cpf = Number(prompt("Informe o CPF: "))
+            break;
+        case 8:
+            console.log('\nApagar Conta\n\n')
+            numConta = Number(prompt('Informe o número da conta: '))
+            conta = bd.lerConta(numConta);
+            if (conta == undefined) {
+                console.log(`\nEssa conta não existe!\nPor favor, informe uma conta válida.`)
+                return
+            }
+            bd.apagarConta(conta)
+            console.log(`\nConta ${numConta} deletada!`)
+            break;
+        case 9:
+            console.log('\nSaindo da aplicação\n');
+            break;
+
         default:
-            console.log("Opção inválida");
+            console.log("\nOpção inválida");
     }
 }
 
 iniciar();
-
-
-
-
-/**
- * import java.util.Scanner;
-public class Conta {
-    private String nome;
-    private int conta, saques;
-    private double saldo;
-    Scanner entrada = new Scanner(System.in);
-    
-    public Conta(String nome, int conta, double saldo_inicial){
-        this.nome=nome;
-        this.conta=conta;
-        saldo=saldo_inicial;
-        saques=0;
-    }
-    
-    public void extrato(){
-        System.out.println("\tEXTRATO");
-        System.out.println("Nome: " + this.nome);
-        System.out.println("Número da conta: " + this.conta);
-        System.out.printf("Saldo atual: %.2f\n",this.saldo);
-        System.out.println("Saques realizados hoje: " + this.saques + "\n");
-        
-    }
-    
-    public void sacar(double valor){
-        if(saldo >= valor){
-            saldo -= valor;
-            saques++;
-            System.out.println("Sacado: " + valor);
-            System.out.println("Novo saldo: " + saldo + "\n");
-        } else {
-            System.out.println("Saldo insuficiente. Faça um depósito\n");
-        }
-    }
-    
-    public void depositar(double valor)
-    {
-        saldo += valor;
-        System.out.println("Depositado: " + valor);
-        System.out.println("Novo saldo: " + saldo + "\n");
-    }
-    
-    public void iniciar(){
-        int opcao;
-        do{
-            exibeMenu();
-            opcao = entrada.nextInt();
-            escolheOpcao(opcao);
-        }while(opcao!=4);
-    }
-    
-    public void exibeMenu(){
-        
-        System.out.println("\t Escolha a opção desejada");
-        System.out.println("1 - Consultar Extrato");
-        System.out.println("2 - Sacar");
-        System.out.println("3 - Depositar");
-        System.out.println("4 - Sair\n");
-        System.out.print("Opção: ");
-        
-    }
-    
-    public void escolheOpcao(int opcao){
-        double valor;
-        
-        switch( opcao ){
-            case 1:    
-                    extrato();
-                    break;
-            case 2: 
-                    if(saques<3){
-                        System.out.print("Quanto deseja sacar: ");
-                        valor = entrada.nextDouble();
-                        sacar(valor);
-                    } else{
-                        System.out.println("Limite de saques diários atingidos.\n");
-                    }
-                    break;
-                    
-            case 3:
-                    System.out.print("Quanto deseja depositar: ");
-                    valor = entrada.nextDouble();
-                    depositar(valor);
-                    break;
-                    
-            case 4: 
-                    System.out.println("Sistema encerrado.");
-                    break;
-                    
-            default:
-                    System.out.println("Opção inválida");
-        }
-    }
-}
- * 
- * 
- */
